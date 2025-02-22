@@ -7,11 +7,22 @@ import Markdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 import axios from "axios";
-import { Copy } from 'lucide-react';
+import { Copy } from "lucide-react";
 function App() {
   const [code, setCode] = useState(``);
   const [review, setReview] = useState("");
+  const [copyStatus, setCopyStatus] = useState("Copy");
 
+  const handleCopyClick = async () => {
+    try {
+      await navigator.clipboard.writeText(review); 
+      setCopyStatus(copyStatus,"Copied!"); 
+      setTimeout(() => setCopyStatus("Copy"), 1000); 
+    } catch (err) {
+      setCopyStatus("Failed to Copy", err.message); 
+      setTimeout(() => setCopyStatus("Copy"), 2000); 
+    }
+  };
   async function CodeReview() {
     setReview("Reviewing...");
 
@@ -59,12 +70,12 @@ function App() {
                 fontSize: "16px",
                 backgroundColor: "#0c0c0c",
                 color: "#ffffff",
-                borderRadius: "7px",
+                borderRadius: "5px",  
                 height: "100%",
                 width: "100%",
                 overflow: "auto",
                 lineHeight: "1.5",
-                whiteSpace: "pre-wrap",
+                
               }}
             />
           </div>
@@ -74,8 +85,8 @@ function App() {
         </div>
         <div className="right">
           <button className="copy">
-          <Copy onClick={() => navigator.clipboard.writeText(`Copied`)}/>
-            </button> 
+            <Copy onClick={handleCopyClick} />
+          </button>
           <Markdown rehypePlugins={[rehypeHighlight]}>{review}</Markdown>
         </div>
       </main>
